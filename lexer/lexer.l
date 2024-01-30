@@ -8,6 +8,9 @@ int main() {
   do {
   } while (yylex() != YYEOF);
 }
+int nowrow = 0;
+int space = 0;
+#define test();   std::fprintf(yyout, "'%s'\t%s\t%s\tLoc=<%s:%d:%d>\n", yytext, (nowrow!=yyrow)?"[StartOfLine]":"", space?"[LeadingSpace]":"", yyloc.c_str(), yyrow, yycolumn - yyleng); nowrow = yyrow; space = 0;
 std::string yyloc = "<stdin>";
 int yyrow = 1, yycolumn = 1, yycolpre = 1;
 #define YY_USER_ACTION                                                         \
@@ -34,50 +37,223 @@ int yyrow = 1, yycolumn = 1, yycolpre = 1;
   yycolpre = yycolumn;
   yycolumn = 1;
 }
-[\f\r\t\v ] {}
+[\f\r\t\v ] {
+  space = 1;
+}
+
+\"((\\\\)|(\\n)|(\\\")|([^\\\"]))*\" {
+  std::fprintf(yyout, "string_literal ");
+  test();
+  return ~YYEOF;  
+}
+void {
+  std::fprintf(yyout, "void ");
+  test();
+  return ~YYEOF;
+}
 int {
-  std::fprintf(yyout, "int '%s'\t\tLoc=<%s:%d:%d>\n", yytext, yyloc.c_str(),
-               yyrow, yycolumn - yyleng);
+  std::fprintf(yyout, "int ");
+  test();
+  return ~YYEOF;
+}
+long {
+  std::fprintf(yyout, "long ");
+  test();
+  return ~YYEOF;
+}
+char {
+  std::fprintf(yyout, "char ");
+  test();
+  return ~YYEOF;
+}
+float {
+  std::fprintf(yyout, "float ");
+  test();
+  return ~YYEOF;
+}
+const {
+  std::fprintf(yyout, "const ");
+  test();
+  return ~YYEOF;
+}
+do {
+  std::fprintf(yyout, "do ");
+  test();
+  return ~YYEOF;
+}
+while {
+  std::fprintf(yyout, "while ");
+  test();
+  return ~YYEOF;
+}
+if {
+  std::fprintf(yyout, "if ");
+  test();
+  return ~YYEOF;
+}
+else {
+  std::fprintf(yyout, "else ");
+  test();
+  return ~YYEOF;
+}
+continue {
+  std::fprintf(yyout, "continue ");
+  test();
+  return ~YYEOF;
+}
+break {
+  std::fprintf(yyout, "break ");
+  test();
   return ~YYEOF;
 }
 return {
-  std::fprintf(yyout, "return '%s'\t\tLoc=<%s:%d:%d>\n", yytext, yyloc.c_str(),
-               yyrow, yycolumn - yyleng);
+  std::fprintf(yyout, "return ");
+  test();
   return ~YYEOF;
 }
 \( {
-  std::fprintf(yyout, "l_paren '%s'\t\tLoc=<%s:%d:%d>\n", yytext, yyloc.c_str(),
-               yyrow, yycolumn - yyleng);
+  std::fprintf(yyout, "l_paren ");
+  test();
   return ~YYEOF;
 }
 \) {
-  std::fprintf(yyout, "r_paren '%s'\t\tLoc=<%s:%d:%d>\n", yytext, yyloc.c_str(),
-               yyrow, yycolumn - yyleng);
+  std::fprintf(yyout, "r_paren ");
+  test();
+  return ~YYEOF;
+}
+\[ {
+  std::fprintf(yyout, "l_square ");
+  test();
+  return ~YYEOF;
+}
+\] {
+  std::fprintf(yyout, "r_square ");
+  test();
   return ~YYEOF;
 }
 \{ {
-  std::fprintf(yyout, "l_brace '%s'\t\tLoc=<%s:%d:%d>\n", yytext, yyloc.c_str(),
-               yyrow, yycolumn - yyleng);
+  std::fprintf(yyout, "l_brace ");
+  test();
   return ~YYEOF;
 }
 \} {
-  std::fprintf(yyout, "r_brace '%s'\t\tLoc=<%s:%d:%d>\n", yytext, yyloc.c_str(),
-               yyrow, yycolumn - yyleng);
+  std::fprintf(yyout, "r_brace ");
+  test();
   return ~YYEOF;
 }
+"+" {
+  std::fprintf(yyout, "plus ");
+  test();
+  return ~YYEOF;
+}
+"-" {
+  std::fprintf(yyout, "minus ");
+  test();
+  return ~YYEOF;
+}
+"*" {
+  std::fprintf(yyout, "star ");
+  test();
+  return ~YYEOF;
+}
+"/" {
+  std::fprintf(yyout, "slash ");
+  test();
+  return ~YYEOF;
+}
+"%" {
+  std::fprintf(yyout, "percent ");
+  test();
+  return ~YYEOF;
+}
+"||" {
+  std::fprintf(yyout, "pipepipe ");
+  test();
+  return ~YYEOF;
+}
+"&&" {
+  std::fprintf(yyout, "ampamp ");
+  test();
+  return ~YYEOF;
+}
+"!=" {
+  std::fprintf(yyout, "exclaimequal ");
+  test();
+  return ~YYEOF;
+}
+"<=" {
+  std::fprintf(yyout, "lessequal ");
+  test();
+  return ~YYEOF;
+}
+">=" {
+  std::fprintf(yyout, "greaterequal ");
+  test();
+  return ~YYEOF;
+}
+"==" {
+  std::fprintf(yyout, "equalequal ");
+  test();
+  return ~YYEOF;
+}
+"<" {
+  std::fprintf(yyout, "less ");
+  test();
+  return ~YYEOF;
+}
+">" {
+  std::fprintf(yyout, "greater ");
+  test();
+  return ~YYEOF;
+}
+"=" {
+  std::fprintf(yyout, "equal ");
+  test();
+  return ~YYEOF;
+}
+"!" {
+  std::fprintf(yyout, "exclaim ");
+  test();
+  return ~YYEOF;
+}
+"," {
+  std::fprintf(yyout, "comma ");
+  test();
+  return ~YYEOF;  
+}
+"..." {
+  std::fprintf(yyout, "ellipsis ");
+  test();
+  return ~YYEOF;  
+}
 ; {
-  std::fprintf(yyout, "semi '%s'\t\tLoc=<%s:%d:%d>\n", yytext, yyloc.c_str(),
-               yyrow, yycolumn - yyleng);
+  std::fprintf(yyout, "semi ");
+  test();
+  return ~YYEOF;
+}
+0[xX][0-9a-fA-F]*(\.[0-9a-fA-F]+)?([pP][-+]?[0-9]+)? {
+  std::fprintf(yyout, "numeric_constant ");
+  test();
+  return ~YYEOF;
+}
+0?[1-9][0-9]*(\.[0-9]+)?([eE][-+]?[0-9]+)? {
+  std::fprintf(yyout, "numeric_constant ");
+  test();
   return ~YYEOF;
 }
 [0-9]+ {
-  std::fprintf(yyout, "numeric_constant '%s'\t\tLoc=<%s:%d:%d>\n", yytext,
-               yyloc.c_str(), yyrow, yycolumn - yyleng);
+  std::fprintf(yyout, "numeric_constant ");
+  test();
+  return ~YYEOF;
+}
+([0-9]+\.[0-9]*|[0-9]*\.[0-9]+)([eE][-+]?[0-9]+)? {
+  std::fprintf(yyout, "numeric_constant ");
+  test();
   return ~YYEOF;
 }
 [a-zA-Z_][a-zA-Z_0-9]* {
-  std::fprintf(yyout, "identifier '%s'\t\tLoc=<%s:%d:%d>\n", yytext,
-               yyloc.c_str(), yyrow, yycolumn - yyleng);
+  std::fprintf(yyout, "identifier ");
+  test();
   return ~YYEOF;
 }
 <<EOF>> {
@@ -86,8 +262,8 @@ return {
   return YYEOF;
 }
 . {
-  std::fprintf(yyout, "unknown '%s'\t\tLoc=<%s:%d:%d>\n", yytext, yyloc.c_str(),
-               yyrow, yycolumn - yyleng);
+  std::fprintf(yyout, "unknown ");
+  test();
   return ~YYEOF;
 }
 %%
