@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
     // 请续写此处的词法分析器
     for (auto token : tokens.getTokens()) {
       if (token->getChannel() != antlr4::Token::HIDDEN_CHANNEL) {
-        std::string t = lexer.getVocabulary().getSymbolicName(token->getType());
+        std::string t = std::string(lexer.getVocabulary().getSymbolicName(token->getType()));
         std::unordered_map<std::string, std::string> transform_table{
             {"Int", "int"},
             {"Identifier", "identifier"},
@@ -57,10 +57,15 @@ int main(int argc, char **argv) {
         sysu_grammar::CParser::TranslationUnitContext *ctx) override {
       llvm::json::Value ret = llvm::json::Object{
           {"kind", "TranslationUnitDecl"}, {"inner", llvm::json::Array{}}};
-      for (auto child : ctx->externalDeclaration()) {
-        ret.getAsObject()->get("inner")->getAsArray()->push_back(
-            visit(child).as<llvm::json::Value>());
-      }
+          for (auto child : ctx->externalDeclaration()) {
+          // 假设 visit(child) 返回 std::any 类型
+          auto anyValue = visit(child);
+          if (anyValue.has_value() && anyValue.type() == typeid(llvm::json::Value)) {
+            // 使用 std::any_cast 安全地转换为 llvm::json::Value 类型
+            auto jsonValue = std::any_cast<llvm::json::Value>(anyValue);
+            ret.getAsObject()->get("inner")->getAsArray()->push_back(jsonValue);
+          }
+        }
       return ret;
     }
     // 请续写 visitExternalDeclaration 及之后的遍历逻辑，将 ParseTree 转换为
@@ -83,7 +88,7 @@ int main(int argc, char **argv) {
     }
   };
   llvm::outs()
-      << Visitor().visit(parser.compilationUnit()).as<llvm::json::Value>()
+      << std::any_cast<llvm::json::Value>(Visitor().visit(parser.compilationUnit()))
       << "\n";
 #else
   struct Listener : sysu_grammar::CBaseListener {
